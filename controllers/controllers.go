@@ -4,6 +4,7 @@ import (
 	"monchef/db"
 	"monchef/models"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,4 +37,22 @@ func CreateRecipe(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, recipe)
+}
+
+func UploadImage(c *gin.Context) {
+	file, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to upload image"})
+		return
+	}
+
+	// Save file to a local directory
+	savePath := filepath.Join("uploads", file.Filename)
+	if err := c.SaveUploadedFile(file, savePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+		return
+	}
+
+	// Return the file path
+	c.JSON(http.StatusOK, gin.H{"file_path": savePath})
 }

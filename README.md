@@ -19,19 +19,70 @@ MonChef is a platform where community members can share recipes, restaurants, an
 ---
 
 ## Project Structure
-```
+```plaintext
 monchef-be/
-├── controllers/       # API handlers
-├── db/                # Database connection and migrations
-├── models/            # Database models
+├── controllers/       # API handlers to manage HTTP requests and responses
+├── db/                # Database connection and models
+│   ├── db.go          # Database connection setup using GORM
+│   └── models/        # Database schema definitions
+│       ├── recipe.go  # Recipe model definition with fields mapped to the database
 ├── .env               # Environment variables (excluded from Git)
 ├── main.go            # Entry point of the application
 ├── go.mod             # Dependency management file
 ├── README.md          # Project documentation
 └── .gitignore         # Git ignore rules
 ```
-
 ---
+
+## Database Models
+The db/models directory contains the schema definitions for the database tables used in the MonChef application. These models are mapped to the database tables using GORM.
+
+### Recipe Model (db/models/recipe.go)
+The Recipe model represents the recipes table in the MySQL database. Below is the structure of the model:
+```go
+type Recipe struct {
+    ID          string    `gorm:"primaryKey" json:"id"`
+    Name        string    `json:"name"`
+    Description string    `json:"description"`
+    Country     string    `json:"country"`
+    Categories  string    `json:"categories"` // Comma-separated values
+    CreatedAt   time.Time `json:"created_at"`
+    Duration    string    `json:"duration"`
+    Difficulty  string    `json:"difficulty"`
+    Images      string    `json:"images"`     // Comma-separated image URLs
+    RecipeSteps string    `json:"recipe"`     // Recipe steps as a string
+}
+```
+
+### Field Descriptions
+- ID: The primary key for the table (gorm:"primaryKey")
+- Name: The name of the recipe
+- Description: A short description of the recipe
+- Country: The country of origin for the recipe
+- Categories: A comma-separated string for categorizing recipes (e.g., "Main Dish,Poultry")
+- CreatedAt: The timestamp of when the recipe was created
+- Duration: Estimated cooking time
+- Difficulty: The level of difficulty (e.g., "Easy", "Intermediate")
+- Images: Comma-separated URLs for images of the recipe
+- RecipeSteps: A string containing the step-by-step instructions for the recipe.
+
+### Example SQL Table Schema
+The Recipe model maps to the following MySQL table schema:
+```sql
+CREATE TABLE recipes (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    country VARCHAR(255),
+    categories TEXT,
+    created_at DATETIME,
+    duration VARCHAR(50),
+    difficulty VARCHAR(50),
+    images TEXT,
+    recipe_steps TEXT
+);
+```
+
 
 ## Installation and Setup
 
